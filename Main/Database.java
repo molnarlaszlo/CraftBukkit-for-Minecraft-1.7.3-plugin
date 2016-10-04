@@ -27,6 +27,7 @@ public class Database {
 	public Database(String serverName, Integer serverPort, String userName, String userPass, String databaseName) {
 		defineConnection(serverName, serverPort, userName, userPass, databaseName);
 	}
+	
 	public static boolean defineConnection(String serverName, Integer serverPort, String userName, String userPass, String databaseName) {
 		
 		Database.defined = false;
@@ -204,4 +205,5 @@ public class Database {
 		return defaultReturn;
 	}
 	
+	/*** END OF FILE ***/
 }
