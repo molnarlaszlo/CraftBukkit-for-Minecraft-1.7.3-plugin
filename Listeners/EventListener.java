@@ -12,41 +12,40 @@ import org.bukkit.event.weather.WeatherChangeEvent;
 import Main.Main;
 import Main.ServerPlayer;
 
+/* EVENTLISTENER
+ * Events not related to players and blocks and mob.
+ */
 public class EventListener implements Listener {
-
-	public static ChatColor RED = Main.RED;
-    public static ChatColor BLUE = Main.BLUE;
-    public static ChatColor GOLD = Main.GOLD;
-    public static ChatColor GRAY = Main.GRAY;
-    public static ChatColor AQUA = Main.AQUA;
-    public static ChatColor GREEN = Main.GREEN;
-    public static ChatColor WHITE = Main.WHITE;
-    public static ChatColor YELLOW = Main.YELLOW;
-    public static ChatColor DARK_RED = Main.DARK_RED;
-    public static ChatColor DARK_AQUA = Main.DARK_AQUA;
-    public static ChatColor DARK_PURPLE = Main.DARK_PURPLE;
-    public static ChatColor LIGHT_PURPLE = Main.LIGHT_PURPLE;
     
-    public static ServerPlayer getPlayer(Player player) {
-    	return Main.players.get(player);
-    }
-    
+    /* PREVENT LAG WITH DISABLING RAIN
+     * To prevent lag we disable weather change when its
+     * sunny and rain can't fall.
+     */
     @EventHandler(priority = EventPriority.HIGH)
     public static void WeatherChangeEvent(WeatherChangeEvent event)
     {
     	event.setCancelled(true);
     }
 
+    /* DISABLE PORTAL CREATION
+     * We do not want to allow portal creation anywhere on the server
+     * because it can break buildings.
+     */
     @EventHandler(priority = EventPriority.HIGH)
     public static void onPortalCreate(PortalCreateEvent event)
     { 
-    	event.setCancelled(true); 
+    	event.setCancelled(true);
     }
     
+    /* PREVENT CREATIVE USER FROM XP FLOOD
+     * We have creative users and we do not want them to
+     * flood XP for themselfes.
+     */
     @EventHandler(priority = EventPriority.HIGH)
     public static void AntiXpBottle(ExpBottleEvent event)
     {
-
+    	event.setCancelled(true);
     }
     
+    /*** END OF FILE ***/
 }
