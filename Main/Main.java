@@ -60,7 +60,7 @@ public class Main extends JavaPlugin implements Listener
 	public static ChatColor DARK_AQUA = ChatColor.DARK_AQUA;
 	public static ChatColor BLUE = ChatColor.BLUE;
 	
-	public static String rangok[] = { GRAY+"látogató", LIGHT_PURPLE+"büntetett", WHITE+"tag", GREEN+"kiemelt tag", AQUA+"moderátor", RED+"admin", DARK_RED+"tulajdonos" };
+	public static String rangok[] = { GRAY+"visitor", LIGHT_PURPLE+"punished", WHITE+"tag", GREEN+"vip", AQUA+"moderator", RED+"administrator", DARK_RED+"owner" };
 	
 	Material[] tools = {
 		Material.WOOD_AXE, Material.WOOD_HOE, Material.WOOD_PICKAXE, Material.WOOD_SPADE, Material.WOOD_SWORD,
@@ -107,7 +107,7 @@ public class Main extends JavaPlugin implements Listener
 	public void onDisable()
 	{
 		saveServer();
-		logger.info("[GodComplex] Server stopped the plugin.");
+		logger.info("[GodComplex] Stopped.");
 	}
 	public static void log(Level logLevel, String sender, String msg) {
 		logger.log(logLevel, "LOG from " + sender + " >> " + msg);
@@ -160,11 +160,11 @@ public class Main extends JavaPlugin implements Listener
 	}
 	public static void saveServer()
 	{
-		List<World> worlds = Bukkit.getWorlds();
-		for(int x = 0; x < worlds.size(); x++)
-			worlds.get(x).save();
+		List<World> worlds = Bukkit.getWorlds();	// Put every active worlds in a list.
+		for(int x = 0; x < worlds.size(); x++)		// Get every world each by one...
+			worlds.get(x).save();					// ...and save the data of the worlds.
 			
-		Bukkit.savePlayers();
+		Bukkit.savePlayers();						// Also save the player data.
 	}
 	public static String formatLongToDate(long l_time)
 	{
@@ -172,7 +172,7 @@ public class Main extends JavaPlugin implements Listener
 		SimpleDateFormat dtgFormat = new SimpleDateFormat("yyyy/MMMM/dd-hh:mm");
 		return dtgFormat.format(date);
 	}
-	public static String getDate(String format) {
+	public static String getDate() {
 		Calendar now = Calendar.getInstance();
 		int yer = now.get(Calendar.YEAR);
 		int mon = now.get(Calendar.MONTH)+1;
@@ -203,7 +203,7 @@ public class Main extends JavaPlugin implements Listener
 			
 			if(ServerPlayer.getPermission(moderator.getName()) > 2)
 				if((player.equals(moderator) && selfSend) || !player.equals(moderator))
-					moderator.sendMessage(DARK_PURPLE + "[DEV csatorna] " + YELLOW + sender + WHITE + ": " + msg);
+					moderator.sendMessage(DARK_PURPLE + "[DEV channel] " + YELLOW + sender + WHITE + ": " + msg);
 		}
 	}
 	public static void saveLocationPoint(String table, String owner, String name, Location loc) {
@@ -267,8 +267,8 @@ public class Main extends JavaPlugin implements Listener
 		for(int i = 0; i < ticks.length; i++)
 			scheduler.cancelTask(i);
 
-		/**/ // Minuter
-		/**/ ticks[tickCounter] = scheduler.scheduleSyncRepeatingTask(plugin, new Runnable() { public void run() { minuter(); }}, 0L, 1 * 1000);
+		/**/ // runOnEveryMinute
+		/**/ ticks[tickCounter] = scheduler.scheduleSyncRepeatingTask(plugin, new Runnable() { public void run() { runOnEveryMinute(); }}, 0L, 1 * 1000);
 		/**/ tickCounter++;
 		
 		/**/ // Autosave
@@ -279,7 +279,7 @@ public class Main extends JavaPlugin implements Listener
 	public static void autoSave() {
 		saveServer();
 	}
-	public static void minuter() {
+	public static void runOnEveryMinute() {
 		
 		
 		
@@ -315,71 +315,71 @@ public class Main extends JavaPlugin implements Listener
 		{
 			if(command.equalsIgnoreCase("help"))
 			{		   
-				player.sendMessage(GOLD+"Parancsok --------------------------");
+				player.sendMessage(GOLD+"Commands --------------------------");
 					
-				player.sendMessage(GREEN+"/m "+WHITE+"-- Privát üzenet küldése");
-				player.sendMessage(GREEN+"/r "+WHITE+"-- Privát üzenetre válasz küldése");
-				player.sendMessage(GREEN+"/v "+WHITE+"-- Válasz adása kvízre");
+				player.sendMessage(GREEN+"/m "+WHITE+"-- Sends a private message to a player.");
+				player.sendMessage(GREEN+"/r "+WHITE+"-- Sends a reply to a private message.");
+				player.sendMessage(GREEN+"/a "+WHITE+"-- Give answer to the trivia.");
 				
-				player.sendMessage(GREEN+"/tp "+WHITE+"-- Teleportálás másik játékoshoz");
-				player.sendMessage(GREEN+"/bl "+WHITE+"-- Lekérdezi hogy az adott játékos kivan-e tiltva");
+				player.sendMessage(GREEN+"/tp "+WHITE+"-- Teleporting to an another player.");
+				player.sendMessage(GREEN+"/bl "+WHITE+"-- Sends a query to see if a player has been banned or not.");
 
-				player.sendMessage(GREEN+"/dob "+WHITE+"-- Dobás egy hat oldalú dobókockával");
+				player.sendMessage(GREEN+"/dice "+WHITE+"-- Dobás egy hat oldalú dobókockával");
 				player.sendMessage(GREEN+"/alt "+WHITE+"-- Alternatív eszköztár elõvétele");
 
-				player.sendMessage(GREEN+"/vesz "+WHITE+"-- Virtuális bolt megnyitása");
-				player.sendMessage(GREEN+"/haza "+WHITE+"-- Otthonba teleportálás");
-				player.sendMessage(GREEN+"/tpbe "+WHITE+"-- Hozzád tudnak majd teleportálni");
-				player.sendMessage(GREEN+"/tpki "+WHITE+"-- Nemfognak tudni hozzád teleportálni");
+				player.sendMessage(GREEN+"/buy "+WHITE+"-- Virtuális bolt megnyitása");
+				player.sendMessage(GREEN+"/home "+WHITE+"-- Otthonba teleportálás");
+				player.sendMessage(GREEN+"/tpon "+WHITE+"-- Hozzád tudnak majd teleportálni");
+				player.sendMessage(GREEN+"/tpoff "+WHITE+"-- Nemfognak tudni hozzád teleportálni");
 				player.sendMessage(GREEN+"/utal "+WHITE+"-- Fillérek utalása más játékos számlájára");
-				player.sendMessage(GREEN+"/penz "+WHITE+"-- Lekérdezi mennyi pénzed van");
-				player.sendMessage(GREEN+"/pont "+WHITE+"-- Lekérdezi hány pontod van");
-				player.sendMessage(GREEN+"/szef "+WHITE+"-- Széfebe teleportál (ha már vásároltál)");
+				player.sendMessage(GREEN+"/money "+WHITE+"-- Lekérdezi mennyi pénzed van");
+				player.sendMessage(GREEN+"/points "+WHITE+"-- Lekérdezi hány pontod van");
+				player.sendMessage(GREEN+"/vault "+WHITE+"-- Széfebe teleportál (ha már vásároltál)");
 
 				player.sendMessage(GREEN+"/putal "+WHITE+"-- Pont utalása egy játékosnak");
-				player.sendMessage(GREEN+"/level "+WHITE+"-- Levéltárad megtekintése");
+				player.sendMessage(GREEN+"/letter "+WHITE+"-- Levéltárad megtekintése");
 				player.sendMessage(GREEN+"/karma "+WHITE+"-- Szerencséd lekérése");
 					
-				player.sendMessage(GREEN+"/szeret "+WHITE+"-- Szerelmes üzenet küldése");
-				player.sendMessage(GREEN+"/vissza "+WHITE+"-- Teleportálás az elözö pontra");
+				player.sendMessage(GREEN+"/love "+WHITE+"-- Sends a love message to a player.");
+				player.sendMessage(GREEN+"/back "+WHITE+"-- Teleports back to the last point where you were.");
 					
 				player.sendMessage(GOLD+"-----------------------------------");
 			}
 			else if(command.equalsIgnoreCase("login"))
 			{
 				if(splayer.loggedIn)
-					splayer.msg(RED + ">> Korábban már bejelentkeztél, többször nem tudsz.");
+					splayer.msg(RED + ">> You have already logged in. You do not need to do it again.");
 				else if(splayer.password.length() == 0)	
-					splayer.msg(YELLOW + ">> Még nem regisztráltál, kérlek regisztrálj a ''\\register'' paranccsal!");
-				else if(args.length != 1)	
-					splayer.msg(RED + ">> Így használd ezt a parancsot: /login jelszó.");
+					splayer.msg(YELLOW + ">> You have not registered here yet, please do with the \"\\register\" command.");
+				else if(args.length != 1)
+					splayer.msg(RED + ">> Use the command this way: /login [your_password]");
 				else if(args[0].equalsIgnoreCase(splayer.password) == false)
-					splayer.msg(RED + ">> Helytelen jelszót adtál meg.");
+					splayer.msg(RED + ">> You gave an incorrect password. Please try again.");
 				else {
 					splayer.setLogin(true);
-					splayer.msg(GREEN+">> Sikeresen bejelentkeztél.");
+					splayer.msg(GREEN+">> You have successfuly logged in. Enjoy your stay!");
 				}
 			}
 			else if(command.equalsIgnoreCase("register"))
 			{
 				if(splayer.password.length() > 0)	
-					splayer.msg(YELLOW + ">> Korábban már regisztráltál, többször nem tudsz.");
+					splayer.msg(YELLOW + ">> You have already registered here. If you forgot your password please send us an issue ticket on our forum.");
 				else if(Arrays.asList(badPasswords).contains(args[0]) || name.equalsIgnoreCase(args[0]) || args[0].length() < 5)
-					splayer.msg(YELLOW + ">> Ilyen gyenge jelszót nem használhatsz, adj meg egy erősebbet.");
+					splayer.msg(YELLOW + ">> The password what you have given is too weak. Please try again.");
 				else if(args.length != 2)	
-					splayer.msg(RED + ">> Így használd ezt a parancsot: /login jelszó jelszó_újra.");
+					splayer.msg(RED + ">> Use the command this way: /login [password] [password]");
 				else if(args[0].equals(args[1]) == false)
 					splayer.msg(RED + ">> A megadott két jelszó nem egyezik!");
 				else {
 					splayer.setLogin(true);
 					splayer.savePassword(args[0]);
-					splayer.msg(GREEN + ">> Sikeresen regisztráltál. Jó szórakozást kívánunk!");
+					splayer.msg(GREEN + ">> You have successfuly registered. Have a good time.");
 				}
 			}
 			else if(command.equalsIgnoreCase("spawn")) 
 			{
 				if(splayer.inJail > 0)
-					splayer.msg(RED + ">> Börtönben vagy. Ne is próbálj megszökni!");
+					splayer.msg(RED + ">> You are in jail. Try not to escape, please.");
 				else {
 					saveLocationPoint("players_locations", name, "back", player.getLocation());
 					teleportToLocationPoint(player, "players_points", "SYSTEM", "spawn", true, GREEN+"A varázslat a kezdöpontra repít.", RED+"Valami probléma merült fel... kérlek szólj egy adminnak!");
@@ -388,23 +388,23 @@ public class Main extends JavaPlugin implements Listener
 			else if(command.equalsIgnoreCase("vissza"))
 			{
 				if(splayer.inJail > 0)
-					splayer.msg(RED + ">> Börtönben vagy. Ne is próbálj megszökni!");
+					splayer.msg(RED + ">> You are in jail. Try not to escape, please.");
 				else
 					teleportToLocationPoint(player, "players_points", name, "back", false, LIGHT_PURPLE+"A varázslat visszarepít.", DARK_PURPLE+"Az univerzum már nem emlékszik hol jártál legutóbb.");
 			}
-			else if(command.equalsIgnoreCase("tpbe"))
+			else if(command.equalsIgnoreCase("tpon"))
 			{
 				splayer.setTeleportPreference(true);
-				player.sendMessage( GREEN + ">> Újra tudnak hozzád teleportálni." );
+				player.sendMessage(GREEN + ">> Újra tudnak hozzád teleportálni.");
 			}
-			else if(command.equalsIgnoreCase("tpki"))
+			else if(command.equalsIgnoreCase("tpoff"))
 			{
 				splayer.setTeleportPreference(false);
-				splayer.msg( RED + ">> Most már nem tudnak hozzád teleportálni." );
+				splayer.msg(RED + ">> Most már nem tudnak hozzád teleportálni.");
 			}
-			else if(command.equalsIgnoreCase("ido"))
+			else if(command.equalsIgnoreCase("time"))
 			{
-				splayer.msg( YELLOW + "A rendszeridõ " + getDate("") );
+				splayer.msg(YELLOW + "The system time is " + getDate());
 			}
 			else if(command.equalsIgnoreCase("bl"))
 			{
@@ -438,12 +438,12 @@ public class Main extends JavaPlugin implements Listener
 		/**/ // Commands for administrators
 		if(splayer.permission > 6)
 		{
-			if(command.equalsIgnoreCase("este"))
+			if(command.equalsIgnoreCase("night"))
 			{
 				player.getWorld().setTime(14000);
 				Bukkit.broadcastMessage(YELLOW + name + YELLOW + " admin-estét csinál.");
 			}
-			else if(command.equalsIgnoreCase("reggel"))
+			else if(command.equalsIgnoreCase("day"))
 			{
 				player.getWorld().setTime(1000);
 				Bukkit.broadcastMessage(YELLOW + name + YELLOW + " admin-reggelt csinál.");
@@ -466,7 +466,7 @@ public class Main extends JavaPlugin implements Listener
 					server.broadcastMessage(RED + ">> Újra lehet a szerveren harcolni!");
 				}
 			}
-			else if(command.equalsIgnoreCase("terulet"))
+			else if(command.equalsIgnoreCase("area"))
 			{
 				if(args.length > 0)
 					if(args[0].equals("uj"))
@@ -522,19 +522,17 @@ public class Main extends JavaPlugin implements Listener
 					int y2 = by + size;
 					int z1 = bz - size;
 					int z2 = bz + size;
-					if(y1 < 0) y1 = 0;
+					
+					if(y1 < 0) 	 y1 = 0;
 					if(y2 > 250) y2 = 250;
 
-					for(int x = x1; x<=x2; x++) {
-						for(int y = y1; y<=y2; y++) {
-							for(int z = z1; z<=z2; z++) {
+					for(int x = x1; x <= x2; x++)
+						for(int y = y1; y <= y2; y++)
+							for(int z = z1; z <= z2; z++) 
 								if(player.getWorld().getBlockAt(x, y, z).getTypeId() == type)
 									player.getWorld().getBlockAt(x, y, z).breakNaturally(null);
-							}
-						}
-					}
-					
-					player.sendMessage(RED + ">> Block has been breaked in radius "+size*2+" with ID: "+type);
+
+					player.sendMessage(RED + ">> Block has been breaked in radius " + (size * 2) + " with ID: " + type);
 				}
 			}
 			else if(command.equalsIgnoreCase("gm"))
@@ -629,7 +627,7 @@ public class Main extends JavaPlugin implements Listener
 		    		}
 				}*/
 			}
-			else if(command.equalsIgnoreCase("alma"))
+			else if(command.equalsIgnoreCase("apple"))
 			{
 				if(args.length != 1)
 					player.sendMessage(YELLOW+">> Így használd: /alma játékos");
