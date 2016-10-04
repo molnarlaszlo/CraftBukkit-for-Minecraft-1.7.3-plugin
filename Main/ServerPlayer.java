@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 
 public class ServerPlayer {
 
-	private static Player player;
+	public static Player player;
 	public static Integer permission;
 	
 	public static String name;
@@ -63,14 +63,14 @@ public class ServerPlayer {
 	public static void createProfile() {
 		Database.insert("players", "uuid, name", "'" + player.getUniqueId() + "', '" + player.getName() + "'");
 	}
+	
 	public static void msg(String msg) {
 		player.sendMessage(msg);
 	}
-	
 	public static void setGameMode(GameMode gm) {
 		player.setGameMode(gm);
 	}
-
+	
 	public static String getWelcome() {
 		return (String) Database.grab(String.class, "players", "welcome", "name = '" + name + "'", "");
 	}
@@ -240,4 +240,6 @@ public class ServerPlayer {
 			default: return ChatColor.GRAY;
 		}
 	}
+	
+	/*** END OF FILE ***/
 }
