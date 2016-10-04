@@ -60,6 +60,7 @@ import Main.*;
 public class PlayerListener implements Listener
 {
 	public static Material[] DoorTypes = { Material.ACACIA_DOOR, Material.BIRCH_DOOR, Material.DARK_OAK_DOOR, Material.JUNGLE_DOOR, Material.SPRUCE_DOOR, Material.WOOD_DOOR, Material.WOODEN_DOOR };
+	
 	public static String deathMessages[] = {" át tört a kódunkon, s ezzel megszegve minden elméletet.", " át tört a kódunkon, s ezzel megszegve minden elméletet.", " almája romlott volt.", " is belátja most már, a láva nem játék.", " vad creeperekkel játszott.", " teli pénztárcával sétált végig Budapesten.",
 			" a jobb létre szenderült!", " megleste a mikulást!", " megkóstolta a bolond gombát!", " megkóstolta a házipálinkánkat!", " megtudta milyen egy adminnal vitatkozni.", " mostmár tudja hogy néz ki az ender sárkány belülrõl!",
 			" megnyerte a fõnyereményt!", " tudta melyik a helyes út.", " megtudta mire jó a respawn gomb!", " beadta a kulcsot.", " szellemes kedvében van.",  " beadta a törölközöt.", " fûbe harapott.", " ellátogatott a kék osztrigába.",
@@ -84,39 +85,51 @@ public class PlayerListener implements Listener
     	return Main.players.get(player);
     }
     
+    /*
+     * 
+     */
     @EventHandler(priority = EventPriority.HIGH)
     public static void onPlayerLogin(PlayerLoginEvent event)
     {
-		if( event.getResult().equals(PlayerLoginEvent.Result.KICK_BANNED) )
-			event.disallow(PlayerLoginEvent.Result.KICK_BANNED, RED + "Ki lettél tiltva a szerverröl!");
-		else if( event.getResult().equals(PlayerLoginEvent.Result.KICK_WHITELIST) )
-			event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, GREEN + "Kérlek jelentkezz a weboldalunkon!");
-		else if( event.getResult().equals(PlayerLoginEvent.Result.KICK_FULL) )
-			event.disallow(PlayerLoginEvent.Result.KICK_FULL, RED + "Sajnáljuk, de a szerver tele van.");
-		else if( event.getResult().equals(PlayerLoginEvent.Result.KICK_OTHER) )
-			event.disallow(PlayerLoginEvent.Result.KICK_OTHER, RED + "Öhm, valami hiba történt, bocsánat.");
+		if( event.getResult().equals(event.Result.KICK_BANNED) )
+			event.disallow(event.Result.KICK_BANNED, RED + "Ki lettél tiltva a szerverröl!");
+		else if( event.getResult().equals(event.Result.KICK_WHITELIST) )
+			event.disallow(event.Result.KICK_WHITELIST, GREEN + "Kérlek jelentkezz a weboldalunkon!");
+		else if( event.getResult().equals(event.Result.KICK_FULL) )
+			event.disallow(event.Result.KICK_FULL, RED + "Sajnáljuk, de a szerver tele van.");
+		else if( event.getResult().equals(event.Result.KICK_OTHER) )
+			event.disallow(event.Result.KICK_OTHER, RED + "Öhm, valami hiba történt, bocsánat.");
 		else
 			if(Main.players.containsKey(event.getPlayer()) == false)
 				Main.players.put(event.getPlayer(), new ServerPlayer(event.getPlayer()));
     }
+    
+    /*
+     * 
+     */
 	@EventHandler(priority = EventPriority.HIGH)
 	public static void PlayerJoinEvent(PlayerJoinEvent event)
     {
-    	Player player = event.getPlayer();
+    	ServerPlayer player = getPlayer(event.getPlayer());
 
-		event.setJoinMessage(YELLOW + getPlayer(player).name + " csatlakozott hozzánk.");
-    	if(getPlayer(player).welcome.length() > 0)
-    		event.setJoinMessage(GREEN + ">> " + getPlayer(player).welcome + "\n" + YELLOW + getPlayer(player).name + " csatlakozott hozzánk.");
+		event.setJoinMessage(YELLOW + player.name + " csatlakozott hozzánk.");
+    	if(player.welcome.length() > 0)
+    		event.setJoinMessage(GREEN + ">> " + player.welcome + "\n" + YELLOW + player.name + " csatlakozott hozzánk.");
     }
+	
+	/*
+	 * 
+	 */
     @EventHandler(priority = EventPriority.HIGH)
     public static void PlayerQuitEvent(PlayerQuitEvent event)
     {
-    	Player player = event.getPlayer();
-    	Main.players.remove(player);
-
-        event.setQuitMessage(YELLOW + player.getName() + YELLOW + " itthagyott minket.");
+    	Main.players.remove(event.getPlayer());
+        event.setQuitMessage(YELLOW + event.getPlayer().getName() + YELLOW + " itthagyott minket.");
     }
     
+    /*
+     * 
+     */
     @EventHandler(priority = EventPriority.HIGH)
     public static void onPlayerChat(AsyncPlayerChatEvent event)
     {
@@ -145,10 +158,9 @@ public class PlayerListener implements Listener
         	sendIt = false;
         
 		/**/ // Censorship module
-        String _badwords = "buzi, búzi, geci, pina, picsa, fasz, szar, kurva, kocsog, köcsög, kibaszott, buzerans, buzeráns, fogyatekos, fogyatékos";
-        String[] badwords = _badwords.split(", ");
+        String[] badwords = {"buzi","búzi","geci","pina","picsa","fasz","szar","kurva","kocsog","köcsög","kibaszott","buzerans","buzeráns","fogyatekos","fogyatékos"};
         for(int i = 0; i < badwords.length; i++)
-        	message = message.replaceAll(badwords[i], onPlayerChat_genStars(badwords[i].length()));
+        	message = message.replaceAll( badwords[i], onPlayerChat_genStars(badwords[i].length()) );
         
         /**/ // Shout out
         if(getPlayer(player).inMute > 0) {
@@ -165,6 +177,10 @@ public class PlayerListener implements Listener
         /**/ // Get lost CraftBukkit
         event.setCancelled(true);
     }
+    
+    /* CONNECTED TO onPlayerChat.
+     * 
+     */
 	public static ChatColor onPlayerChat_getColor(Integer perm) {
 		switch(perm) {
 			case 0: return GRAY;
@@ -177,15 +193,23 @@ public class PlayerListener implements Listener
 			default: return YELLOW;
 		}
 	}
+	
+	/* CONNECTED TO onPlayerChat.
+	 * 
+	 */
 	public static String onPlayerChat_genStars(Integer length) {
 		String msg = "";
 		for(int i = 1; i <= length; i++)
 			msg = msg + "*";
 		return msg;
 	}
+	 
+	/* CONNECTED TO onPlayerChat.
+	 * 
+	 */
 	public static Boolean onPlayerChat_containsBannedWords(String msg) {
 		String[] words = msg.split(" ");
-		String[] blocked = "szeró|szeróm|szerver|szerverem|ip".split("|");
+		String[] blocked = {"szeró","szeróm","szerver","szerverem","ip"};
 		
 		for(int x = 0; x < words.length; x++)
 			for(int y = 0; y < blocked.length; y++)
@@ -193,46 +217,34 @@ public class PlayerListener implements Listener
 					return true;
 		return false;
 	}
-
-
-    @EventHandler(priority = EventPriority.HIGH)
-    public static void blockChange(EntityChangeBlockEvent event)
-    {
-        EntityType entity = event.getEntityType();
-        
-        if(entity.equals(EntityType.ENDER_CRYSTAL))
-            event.setCancelled(true);
-        else if(entity.equals(EntityType.ENDER_DRAGON))
-            event.setCancelled(true);
-        else if(entity.equals(EntityType.ENDERMAN))
-            event.setCancelled(true);
-        else if(entity.equals(EntityType.CREEPER))
-            event.setCancelled(true);
-        else if(entity.equals(EntityType.GHAST))
-            event.setCancelled(true);
-    }
     
+    /*
+     * 
+     */
     @EventHandler(priority = EventPriority.HIGH)
     public static void InventoryOpenEvent(InventoryOpenEvent event)
     {
-    	if(getPlayer((Player) event.getPlayer()).loggedIn == false)
+    	if(getPlayer(event.getPlayer()).loggedIn == false)
     		event.setCancelled(true);
     	else if(event.getInventory().getHolder() instanceof Chest || event.getInventory().getHolder() instanceof DoubleChest)
             event.setCancelled(false);
     }
     
+    /*
+     * 
+     */
     @EventHandler(priority = EventPriority.HIGH)
     public static void PlayerPickupItemEvent(PlayerPickupItemEvent event)
     {
-    	Player player = event.getPlayer();
-    	Integer perm = getPlayer(player).permission;
-    	
-    	if(getPlayer(player).loggedIn == false)
+    	if(getPlayer(event.getPlayer()).loggedIn == false)
     		event.setCancelled(true);
-    	if(perm < 2)
+    	if(getPlayer(event.getPlayer()).permission < 2)
     		event.setCancelled(true);
     }
     
+    /*
+     * 
+     */
     @EventHandler(priority = EventPriority.HIGH)
     public static void PlayerDropItemEvent(PlayerDropItemEvent event)
     {
@@ -245,18 +257,27 @@ public class PlayerListener implements Listener
     		event.setCancelled(true);
     }
     
+    /*
+     * 
+     */
     @EventHandler(priority = EventPriority.HIGH)
-    public static void onPlayerRespawn(PlayerRespawnEvent event)
+    public static void PlayerRespawnEvent(PlayerRespawnEvent event)
     {
     	event.setRespawnLocation(Main.getLocationPoint("players_points", "SYSTEM", "spawn"));
     }
     
+    /*
+     * 
+     */
     @EventHandler(priority = EventPriority.HIGH)
     public static void onPlayerMove(PlayerMoveEvent event)
     {
     	
     }
     
+    /*
+     * 
+     */
 	@EventHandler(priority = EventPriority.HIGH)
 	public static void onPlayerDeathEvent(PlayerDeathEvent event)
     { 
@@ -273,6 +294,9 @@ public class PlayerListener implements Listener
     	event.setDeathMessage(DARK_PURPLE + player.getName() + deathMessages[Main.random.nextInt(deathMessages.length)]);
     }
 	
+	/*
+	 * 
+	 */
 	@EventHandler(priority = EventPriority.HIGH)
     public static void onTeleport(PlayerTeleportEvent event)
     {
@@ -286,6 +310,9 @@ public class PlayerListener implements Listener
     	}
     }
 
+	/*
+	 * 
+	 */
 	@EventHandler(priority = EventPriority.HIGH)
 	public static void PlayerBucketEmptyEvent(PlayerBucketEmptyEvent event)
     {
@@ -300,6 +327,9 @@ public class PlayerListener implements Listener
     		event.setCancelled(true);
     }
 	
+	/*
+	 * 
+	 */
 	public static BlockFace getPlayerDirection(Player player, Boolean inverted) {
 		double d = (player.getLocation().getYaw() * 4.0F / 360.0F) + 0.5D;
 		int i = (int) d;
@@ -324,6 +354,9 @@ public class PlayerListener implements Listener
 			}
 	}
 
+	/*
+	 * 
+	 */
 	public static String listActionItems(ItemStack[] items) {
 		String out = "";
 
@@ -336,6 +369,10 @@ public class PlayerListener implements Listener
 		
 		return out;
 	}
+	
+	/*
+	 * 
+	 */
 	public static String convertMaterialName(Material mat) {
 		switch(mat.toString().toUpperCase()) {
 			case "STONE": return "kö";
@@ -354,7 +391,75 @@ public class PlayerListener implements Listener
 		}
 	}
 	
-	@SuppressWarnings("static-access")
+	/*
+	 * 
+	 */
+    @SuppressWarnings("deprecation")
+	public static void openDoor(Block block) {
+    	if(block.getData() >= 8)
+			block = block.getRelative(BlockFace.DOWN);
+		
+		if (block.getData() < 4)
+			block.setData((byte)(block.getData() + 4));
+		else
+			block.setData((byte)(block.getData() - 4));
+		
+    	block.getWorld().playEffect(block.getLocation(), Effect.DOOR_TOGGLE, 0);
+    }
+
+    /*
+     * 
+     */
+    public static void magicStick(Player player, Location place, Material type, Integer size, Integer ySize) {
+    	Double dist = Double.POSITIVE_INFINITY;
+    	
+    	int bx = place.getBlockX();
+    	int by = place.getBlockY();
+    	int bz = place.getBlockZ();
+    	
+    	if(ySize < 0) ySize = 0;
+		if(ySize > 250) ySize = 250;
+
+		if(type.equals(Material.COAL))
+			type = Material.COAL_ORE;
+		else if(type.equals(Material.IRON_INGOT))
+			type = Material.IRON_ORE;
+		else if(type.equals(Material.REDSTONE))
+			type = Material.REDSTONE_ORE;
+		else if(type.equals(Material.GOLD_INGOT))
+			type = Material.GOLD_ORE;
+		else if(type.equals(Material.EMERALD))
+			type = Material.EMERALD_ORE;
+		else if(type.equals(Material.DIAMOND))
+			type = Material.DIAMOND_ORE;
+		else
+			return;
+		
+    	for(int x = place.getBlockX() - size; x <= place.getBlockX() + size; x++)
+    		for(int y = place.getBlockY() - ySize; y <= place.getBlockY() + ySize; y++)
+    			for(int z = place.getBlockZ() - size; z <= place.getBlockZ() + size; z++)
+    				if(place.getWorld().getBlockAt(x, y, z).getType().equals(type))
+    					if(Math.sqrt((x-bx)*(x-bx) + (y-by)*(y-by) + (z-bz)*(z-bz)) < dist)
+	    					dist = Math.sqrt((x-bx)*(x-bx) + (y-by)*(y-by) + (z-bz)*(z-bz));
+    					
+
+    	if(dist < 3)
+			player.sendMessage(ChatColor.YELLOW + "Tûzforró!!!");
+		else if(dist < 5)
+			player.sendMessage(ChatColor.GOLD + "Forró!");
+		else if(dist < 7.5)
+			player.sendMessage(ChatColor.RED + "Melegedik!");
+		else if(dist < 10)
+			player.sendMessage(ChatColor.GRAY + "Langyos...");
+		else if(dist < 16)
+			player.sendMessage(ChatColor.AQUA + "Hideg.");
+		else
+			player.sendMessage(ChatColor.BLUE + "Jéghideg!!!");
+    }
+    
+	/*
+	 * 
+	 */
 	@EventHandler(priority = EventPriority.HIGH)
 	public static void PlayerInteractEvent(PlayerInteractEvent event)
     {
@@ -665,63 +770,5 @@ public class PlayerListener implements Listener
     	
     }
 	
-    @SuppressWarnings("deprecation")
-	public static void openDoor(Block block) {
-    	if(block.getData() >= 8)
-			block = block.getRelative(BlockFace.DOWN);
-		
-		if (block.getData() < 4)
-			block.setData((byte)(block.getData() + 4));
-		else
-			block.setData((byte)(block.getData() - 4));
-		
-    	block.getWorld().playEffect(block.getLocation(), Effect.DOOR_TOGGLE, 0);
-    }
-
-    public static void magicStick(Player player, Location place, Material type, Integer size, Integer ySize) {
-    	Double dist = Double.POSITIVE_INFINITY;
-    	
-    	int bx = place.getBlockX();
-    	int by = place.getBlockY();
-    	int bz = place.getBlockZ();
-    	
-    	if(ySize < 0) ySize = 0;
-		if(ySize > 250) ySize = 250;
-
-		if(type.equals(Material.COAL))
-			type = Material.COAL_ORE;
-		else if(type.equals(Material.IRON_INGOT))
-			type = Material.IRON_ORE;
-		else if(type.equals(Material.REDSTONE))
-			type = Material.REDSTONE_ORE;
-		else if(type.equals(Material.GOLD_INGOT))
-			type = Material.GOLD_ORE;
-		else if(type.equals(Material.EMERALD))
-			type = Material.EMERALD_ORE;
-		else if(type.equals(Material.DIAMOND))
-			type = Material.DIAMOND_ORE;
-		else
-			return;
-		
-    	for(int x = place.getBlockX() - size; x <= place.getBlockX() + size; x++)
-    		for(int y = place.getBlockY() - ySize; y <= place.getBlockY() + ySize; y++)
-    			for(int z = place.getBlockZ() - size; z <= place.getBlockZ() + size; z++)
-    				if(place.getWorld().getBlockAt(x, y, z).getType().equals(type))
-    					if(Math.sqrt((x-bx)*(x-bx) + (y-by)*(y-by) + (z-bz)*(z-bz)) < dist)
-	    					dist = Math.sqrt((x-bx)*(x-bx) + (y-by)*(y-by) + (z-bz)*(z-bz));
-    					
-
-    	if(dist < 3)
-			player.sendMessage(ChatColor.YELLOW + "Tûzforró!!!");
-		else if(dist < 5)
-			player.sendMessage(ChatColor.GOLD + "Forró!");
-		else if(dist < 7.5)
-			player.sendMessage(ChatColor.RED + "Melegedik!");
-		else if(dist < 10)
-			player.sendMessage(ChatColor.GRAY + "Langyos...");
-		else if(dist < 16)
-			player.sendMessage(ChatColor.AQUA + "Hideg.");
-		else
-			player.sendMessage(ChatColor.BLUE + "Jéghideg!!!");
-    }
+	/*** END OF FILE ***/
 }
